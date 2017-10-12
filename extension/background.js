@@ -82,11 +82,8 @@ let createNotofication = (options, data, onLoad) => {
     }
 
     for(let match of data) {
-        if(!('showed' in match)) {
             options['message'] = `${match.team1.name} vs ${match.team2.name}`;
             chrome.notifications.create(`${match['id']}`, options);
-            match.showed = true;
-        }
     };
 
 };
