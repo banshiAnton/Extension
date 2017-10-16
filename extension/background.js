@@ -1,13 +1,19 @@
-window.soundPlay = true;
+window.soundPlay = null;
+
+let missed = {mis:null};
+
+chrome.storage.sync.get('soundPlay', (item) => {
+    soundPlay = ((Object.keys(item).length) ? item.soundPlay : true);
+    if(missed.mis) {
+        createNotofication(...missed.agrs);
+    }
+});
+
 window.hltvUrl = `https://www.hltv.org/`;
 window.matchesList = [];
 
 let localUrl = 'http://localhost:3000'; 
 let socketUrl = 'https://still-stream-81266.herokuapp.com/';
-
-chrome.storage.sync.get('soundPlay', (item) => {
-    soundPlay = ((Object.keys(item).length) ? item.soundPlay : true);
-});
 
 let audio = new Howl({
     urls:['solemn.mp3']
@@ -45,14 +51,20 @@ chrome.runtime.onMessage.addListener((message) => {
 let socket = io.connect(socketUrl);
 socket.on('sendMatches', (data) => {
 
+    let noOne = true;
     matchesList = data;
-    createNotofication(defOptionsNotif, matchesList, true);
+
+    if(matchesList.length == 1) {
+        noOne = false;
+    }
+
+    createNotofication(defOptionsNotif, matchesList, noOne);
 
 });
 
 socket.on('newMatches', (data) => {
     matchesList = data.liveMatches;
-
+    console.log('New Matches ', matchesList);
     createNotofication(defOptionsNotif, data.newMatches, false);
 });
 
@@ -61,6 +73,12 @@ socket.on('updateMatches', (data) => {
 });
 
 let createNotofication = (options, data, onLoad) => {
+
+    if(soundPlay == null) {
+        missed.mis = true;
+        missed.agrs = [options, data, onLoad];
+        return; 
+    }
     
     if(soundPlay){
         audio.play();
