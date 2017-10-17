@@ -28,9 +28,7 @@ let defOptionsNotif = {
 
 chrome.notifications.onClicked.addListener((notificationId) => {
 
-    if(notificationId == 'noMatches'){
-
-    } else if(notificationId == 'openMsg') {
+    if(notificationId == 'openMsg') {
         goMatch(hltvUrl + `matches/`);
 
     } else {
@@ -84,16 +82,14 @@ let createNotofication = (options, data, onLoad) => {
         audio.play();
     }
 
-    if(!data.length) {
-        options['message'] = `No Matches Now`;
-        chrome.notifications.create('noMatches', options);
-        return;
-    }
-
     if(onLoad) {
         options['message'] = ``;
-        for(let match of data) {
-            options['message'] += `${match.team1.name} vs ${match.team2.name}\n`;
+        if(!data.length) {
+            options['message'] = `No Matches Now`;
+        } else {
+            for(let match of data) {
+                options['message'] += `${match.team1.name} vs ${match.team2.name}\n`;
+            }
         }
         chrome.notifications.create('openMsg', options);
         return;
