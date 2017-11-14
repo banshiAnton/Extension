@@ -46,7 +46,7 @@ chrome.runtime.onMessage.addListener((message) => {
     chrome.storage.sync.set({soundPlay});
 });
 
-let socket = io.connect(socketUrl);
+let socket = io.connect(localUrl);
 socket.on('sendMatches', (data) => {
 
     let noOne = true;
